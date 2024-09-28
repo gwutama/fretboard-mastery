@@ -109,11 +109,41 @@ def draw_fretboard(canvas, canvas_width):
 
             note_name = get_note_name(base_note, fret)
 
+            # Assign a tag to each note (circle + text) for easy selection later
+            note_tag = f"note_{note_name}"
+
             # Draw circle for the note
-            canvas.create_oval(x_pos - note_radius, y_pos - note_radius, x_pos + note_radius, y_pos + note_radius,
-                               fill="dark grey", outline="")
+            note_circle = canvas.create_oval(x_pos - note_radius, y_pos - note_radius, x_pos + note_radius, y_pos + note_radius,
+                                             fill="dark grey", outline="", tags=note_tag)
             # Draw the note name in white
-            canvas.create_text(x_pos, y_pos, text=note_name, fill="white", font=("Arial", 10, "bold"))
+            note_text = canvas.create_text(x_pos, y_pos, text=note_name, fill="white", font=("Arial", 10, "bold"), tags=note_tag)
+
+            # Bind click event to highlight all matching notes
+            canvas.tag_bind(note_tag, "<Button-1>", lambda event, note=note_name: highlight_notes(canvas, note))
+
+
+def highlight_notes(canvas, note_to_highlight):
+    """Highlights all notes that match the clicked note."""
+    # Reset all note colors first
+    for note in chromatic_scale:
+        note_tag = f"note_{note}"
+        # Reset both the circle fill and text color
+        for item in canvas.find_withtag(note_tag):
+            if canvas.type(item) == 'oval':
+                canvas.itemconfig(item, fill="dark grey")  # Reset circle fill color
+            elif canvas.type(item) == 'text':
+                canvas.itemconfig(item, fill="white")  # Reset text color
+
+    # Highlight matching notes
+    note_tag = f"note_{note_to_highlight}"
+    for item in canvas.find_withtag(note_tag):
+        if canvas.type(item) == 'oval':
+            canvas.itemconfig(item, fill="blue")  # Highlight circles
+        elif canvas.type(item) == 'text':
+            canvas.itemconfig(item, fill="white")  # Keep the text color white
+
+    # Force UI update to immediately reflect changes
+    canvas.update_idletasks()
 
 
 def on_click(event):
