@@ -1,10 +1,17 @@
 import tkinter as tk
+import pygame.mixer
+
+# Initialize pygame mixer
+pygame.mixer.init()
 
 # Notes for each string (standard tuning EADGBE), mirrored vertically
 notes = ['E', 'B', 'G', 'D', 'A', 'E']  # High E string is now at the top, Low E is at the bottom
 
 # All possible notes in a chromatic scale
 chromatic_scale = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
+
+# Create a dictionary to map note names to corresponding sound file paths
+note_sounds = {note: f"sounds/{note}.mp3" for note in chromatic_scale}
 
 def get_note_name(string_note, fret):
     """Returns the note name for a given string and fret."""
@@ -84,8 +91,15 @@ def draw_fretboard(canvas, canvas_width, highlight_callback=None):
                 canvas.tag_bind(note_tag, "<Button-1>", lambda event, note=note_name: handle_note_click(canvas, note, highlight_callback))
 
 
+def play_note_sound(note):
+    """Plays the corresponding note sound using pygame.mixer."""
+    sound_file = note_sounds.get(note)
+    if sound_file:
+        sound = pygame.mixer.Sound(sound_file)
+        sound.play()
+
 def handle_note_click(canvas, note, highlight_callback):
-    """Handles note click event and sets the highlighted note."""
+    """Handles note click event and sets the highlighted note, also plays the corresponding note sound."""
     # Store the clicked note as a variable to track it globally
     canvas.setvar("highlighted_note", note)
     highlight_callback(note)
@@ -150,3 +164,6 @@ def highlight_notes(canvas, root_note, intervals_to_highlight):
 
     # Force UI update to immediately reflect changes
     canvas.update_idletasks()
+
+    # Play the corresponding sound for the clicked note
+    play_note_sound(root_note)
