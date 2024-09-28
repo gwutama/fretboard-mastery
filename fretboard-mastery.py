@@ -7,6 +7,17 @@ pygame.mixer.init()
 tick_sound = pygame.mixer.Sound("sounds/drumstick.wav")
 metronome_running = False
 
+# Notes for each string (standard tuning EADGBE), mirrored vertically
+notes = ['E', 'B', 'G', 'D', 'A', 'E']  # High E string is now at the top, Low E is at the bottom
+
+# All possible notes in a chromatic scale
+chromatic_scale = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
+
+def get_note_name(string_note, fret):
+    """Returns the note name for a given string and fret."""
+    start_index = chromatic_scale.index(string_note)
+    return chromatic_scale[(start_index + fret) % len(chromatic_scale)]
+
 
 def play_tick():
     """Plays the tick sound using pygame.mixer."""
@@ -39,51 +50,68 @@ def stop_metronome():
 
 
 def draw_fretboard(canvas, canvas_width):
-    """Draws the fretboard with 22 frets, 6 strings, and correct inlays."""
+    """Draws the fretboard with 22 frets, 6 strings, note names, and inlays."""
+    left_padding = 30  # Add padding to the left for the 0th fret notes
     string_spacing = 30
     canvas_height = string_spacing * 6 + 40
-
-    # Adjusting fret sizes: The first fret is slightly larger to account for the thicker 0th fret
-    normal_fret_width = canvas_width // 22
-    first_fret_width = normal_fret_width + 5  # Increase the width of the first fret
-    fret_line_top = 50  # Top y-coordinate for fret lines (aligned with the first string)
-    fret_line_bottom = canvas_height - 20  # Bottom y-coordinate for fret lines (aligned with the last string)
+    normal_fret_width = (canvas_width - left_padding) // 22
+    first_fret_width = normal_fret_width + 5
+    fret_line_top = 50
+    fret_line_bottom = canvas_height - 20
 
     canvas.config(width=canvas_width, height=canvas_height)
 
-    # Fret inlays on frets 5, 7, 9, 12, 15, 17 (corrected by subtracting 1)
-    inlay_frets = [4, 6, 8, 14, 16]  # Subtracting 1 from each fret to correct the offset
+    # Fret inlays on frets 5, 7, 9, 12, 15, 17
+    inlay_frets = [4, 6, 8, 14, 16]
     inlay_color = "light grey"
     inlay_radius = 5
 
-    # Center y position for inlays
-    y_center = (fret_line_top + fret_line_bottom) // 2
-
     # Draw single dot inlays first
+    y_center = (fret_line_top + fret_line_bottom) // 2
     for fret in inlay_frets:
-        x = (fret + 0.5) * normal_fret_width + first_fret_width - normal_fret_width
+        x = left_padding + (fret + 0.5) * normal_fret_width + first_fret_width - normal_fret_width
         canvas.create_oval(x - inlay_radius, y_center - inlay_radius, x + inlay_radius, y_center + inlay_radius,
                            fill=inlay_color, outline="")
 
     # Double inlays for fret 12 with wider separation
-    x_12 = (11 + 0.5) * normal_fret_width + first_fret_width - normal_fret_width  # Adjusted for the first fret
-    double_inlay_offset = 20  # Wider distance between the dots
+    x_12 = left_padding + (11 + 0.5) * normal_fret_width + first_fret_width - normal_fret_width
+    double_inlay_offset = 20
     canvas.create_oval(x_12 - inlay_radius, y_center - double_inlay_offset, x_12 + inlay_radius,
                        y_center - double_inlay_offset + 2 * inlay_radius, fill=inlay_color, outline="")
     canvas.create_oval(x_12 - inlay_radius, y_center + double_inlay_offset - 2 * inlay_radius, x_12 + inlay_radius,
                        y_center + double_inlay_offset, fill=inlay_color, outline="")
 
-    # Now draw the frets
-    canvas.create_line(0, fret_line_top, 0, fret_line_bottom, width=15)  # Thicker 0th fret
-    canvas.create_line(first_fret_width, fret_line_top, first_fret_width, fret_line_bottom, width=2)
-
+    # Draw frets
+    canvas.create_line(left_padding, fret_line_top, left_padding, fret_line_bottom, width=15)  # Thicker 0th fret
+    canvas.create_line(left_padding + first_fret_width, fret_line_top, left_padding + first_fret_width, fret_line_bottom, width=2)
     for i in range(2, 23):
-        x = first_fret_width + (i - 1) * normal_fret_width
+        x = left_padding + first_fret_width + (i - 1) * normal_fret_width
         canvas.create_line(x, fret_line_top, x, fret_line_bottom, width=2)
 
-    # Draw the strings over the frets and inlays
+    # Draw strings over the frets and inlays
     for i in range(6):
-        canvas.create_line(0, 50 + i * string_spacing, canvas_width, 50 + i * string_spacing, width=2)
+        canvas.create_line(left_padding, 50 + i * string_spacing, canvas_width, 50 + i * string_spacing, width=2)
+
+    # Draw note names, move one fret to the left for correct positioning
+    note_radius = 12
+    for string in range(6):
+        base_note = notes[string]  # Now using the mirrored string order
+        y_pos = 50 + string * string_spacing
+        for fret in range(22):
+            if fret == 0:
+                # Shift fret 0 notes as if they're on a "negative 1" fret
+                x_pos = left_padding + first_fret_width - normal_fret_width - 20  # Further left for -1 fret effect
+            else:
+                # Adjust x_pos for notes to be one fret left
+                x_pos = left_padding + first_fret_width + (fret - 1.5) * normal_fret_width
+
+            note_name = get_note_name(base_note, fret)
+
+            # Draw circle for the note
+            canvas.create_oval(x_pos - note_radius, y_pos - note_radius, x_pos + note_radius, y_pos + note_radius,
+                               fill="dark grey", outline="")
+            # Draw the note name in white
+            canvas.create_text(x_pos, y_pos, text=note_name, fill="white", font=("Arial", 10, "bold"))
 
 
 def on_click(event):
@@ -98,6 +126,9 @@ window_width = 800
 window_height = 400
 root.geometry(f"{window_width}x{window_height}")
 root.resizable(False, False)
+
+# Focus the window when it starts
+root.focus_force()
 
 # Reduce the width of the fretboard slightly (90% of window width)
 canvas_width = int(window_width * 0.9)
