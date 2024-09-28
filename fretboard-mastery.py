@@ -63,23 +63,25 @@ def draw_fretboard(canvas, canvas_width):
 
     # Fret inlays on frets 5, 7, 9, 12, 15, 17
     inlay_frets = [4, 6, 8, 14, 16]
-    inlay_color = "light grey"
+    inlay_color = "black"
     inlay_radius = 5
 
-    # Draw single dot inlays first
-    y_center = (fret_line_top + fret_line_bottom) // 2
+    # Position the inlays outside the frets (below the fretboard)
+    y_inlay_position = fret_line_bottom + 17  # Position below the frets
+
+    # Draw single dot inlays between frets
     for fret in inlay_frets:
         x = left_padding + (fret + 0.5) * normal_fret_width + first_fret_width - normal_fret_width
-        canvas.create_oval(x - inlay_radius, y_center - inlay_radius, x + inlay_radius, y_center + inlay_radius,
+        canvas.create_oval(x - inlay_radius, y_inlay_position - inlay_radius, x + inlay_radius, y_inlay_position + inlay_radius,
                            fill=inlay_color, outline="")
 
-    # Double inlays for fret 12 with wider separation
+    # Double inlays for fret 12 with horizontal arrangement
     x_12 = left_padding + (11 + 0.5) * normal_fret_width + first_fret_width - normal_fret_width
-    double_inlay_offset = 20
-    canvas.create_oval(x_12 - inlay_radius, y_center - double_inlay_offset, x_12 + inlay_radius,
-                       y_center - double_inlay_offset + 2 * inlay_radius, fill=inlay_color, outline="")
-    canvas.create_oval(x_12 - inlay_radius, y_center + double_inlay_offset - 2 * inlay_radius, x_12 + inlay_radius,
-                       y_center + double_inlay_offset, fill=inlay_color, outline="")
+    double_inlay_offset = 8
+    canvas.create_oval(x_12 - inlay_radius - double_inlay_offset, y_inlay_position - inlay_radius,
+                       x_12 + inlay_radius - double_inlay_offset, y_inlay_position + inlay_radius, fill=inlay_color, outline="")
+    canvas.create_oval(x_12 - inlay_radius + double_inlay_offset, y_inlay_position - inlay_radius,
+                       x_12 + inlay_radius + double_inlay_offset, y_inlay_position + inlay_radius, fill=inlay_color, outline="")
 
     # Draw frets
     canvas.create_line(left_padding, fret_line_top, left_padding, fret_line_bottom, width=15)  # Thicker 0th fret
