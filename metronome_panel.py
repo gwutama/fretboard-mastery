@@ -1,7 +1,7 @@
 import tkinter as tk
 from metronome import start_metronome, stop_metronome
 
-def create_metronome_panel(root, window_width, row):
+def create_metronome_panel(root, window_width, row, tick_event):
     """Creates the metronome panel and returns the slider widget."""
     metronome_frame = tk.LabelFrame(root, text="Metronome", padx=10, pady=10, width=window_width - 40)
     metronome_frame.grid(row=row, column=0, columnspan=3, padx=10, pady=10, sticky='ew')
@@ -15,7 +15,7 @@ def create_metronome_panel(root, window_width, row):
     bpm_slider.grid(row=0, column=1, padx=5, pady=5, sticky='w')
 
     # Reduced padx to bring buttons closer
-    start_metronome_button = tk.Button(metronome_frame, text="Start", command=lambda: start_metronome(bpm_slider))
+    start_metronome_button = tk.Button(metronome_frame, text="Start", command=lambda: start_metronome(bpm_slider, tick_event))
     start_metronome_button.grid(row=0, column=2, padx=(5, 2), pady=5, sticky='e')
 
     stop_metronome_button = tk.Button(metronome_frame, text="Stop", command=stop_metronome)

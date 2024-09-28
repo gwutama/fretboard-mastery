@@ -105,6 +105,9 @@ def handle_note_click(canvas, note, highlight_callback):
     highlight_callback(note)
 
 def highlight_notes(canvas, root_note, intervals_to_highlight):
+    # Play the corresponding sound for the clicked note
+    play_note_sound(root_note)
+
     """Highlights root note (red), major third (green), perfect fifth (blue), and major seventh (yellow) on the fretboard."""
     # Calculate the positions of intervals relative to the root note
     root_index = chromatic_scale.index(root_note)
@@ -164,6 +167,3 @@ def highlight_notes(canvas, root_note, intervals_to_highlight):
 
     # Force UI update to immediately reflect changes
     canvas.update_idletasks()
-
-    # Play the corresponding sound for the clicked note
-    play_note_sound(root_note)
