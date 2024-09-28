@@ -45,7 +45,7 @@ def create_random_note_panel(root, window_width, row, highlight_notes):
     interval_slider.grid(row=0, column=1, padx=5, pady=5, sticky='w')
 
     # Center the note label using grid and set its text color to blue
-    note_label = tk.Label(random_note_frame, text="Note", font=("Arial", 50, "bold"), fg="blue")
+    note_label = tk.Label(random_note_frame, text="Note", font=("Arial", 50, "bold"), fg="red")
     note_label.grid(row=1, column=0, columnspan=4, padx=5, pady=20, sticky="nsew")
 
     start_button = tk.Button(random_note_frame, text="Start", command=lambda: start_random_note_practice(interval_slider, note_label, highlight_notes))

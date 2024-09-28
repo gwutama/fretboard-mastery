@@ -1,3 +1,5 @@
+import tkinter as tk
+
 # Notes for each string (standard tuning EADGBE), mirrored vertically
 notes = ['E', 'B', 'G', 'D', 'A', 'E']  # High E string is now at the top, Low E is at the bottom
 
@@ -78,12 +80,22 @@ def draw_fretboard(canvas, canvas_width):
             # Draw the note name in white
             note_text = canvas.create_text(x_pos, y_pos, text=note_name, fill="white", font=("Arial", 10, "bold"), tags=note_tag)
 
-            # Bind click event to highlight all matching notes
+            # Bind click event to highlight all matching notes and intervals
             canvas.tag_bind(note_tag, "<Button-1>", lambda event, note=note_name: highlight_notes(canvas, note))
 
 
-def highlight_notes(canvas, note_to_highlight):
-    """Highlights all notes that match the clicked note."""
+def highlight_notes(canvas, root_note):
+    """Highlights root note (red), major third (green), perfect fifth (blue), and major seventh (yellow) on the fretboard."""
+    # Calculate major third (M3), perfect fifth (M5), and major seventh (M7)
+    root_index = chromatic_scale.index(root_note)
+    major_third_index = (root_index + 4) % 12  # M3 is 4 semitones above the root
+    perfect_fifth_index = (root_index + 7) % 12  # M5 is 7 semitones above the root
+    major_seventh_index = (root_index + 11) % 12  # M7 is 11 semitones above the root
+
+    major_third = chromatic_scale[major_third_index]
+    perfect_fifth = chromatic_scale[perfect_fifth_index]
+    major_seventh = chromatic_scale[major_seventh_index]
+
     # Reset all note colors first
     for note in chromatic_scale:
         note_tag = f"note_{note}"
@@ -94,11 +106,35 @@ def highlight_notes(canvas, note_to_highlight):
             elif canvas.type(item) == 'text':
                 canvas.itemconfig(item, fill="white")  # Reset text color
 
-    # Highlight matching notes
-    note_tag = f"note_{note_to_highlight}"
-    for item in canvas.find_withtag(note_tag):
+    # Highlight root notes (red)
+    root_tag = f"note_{root_note}"
+    for item in canvas.find_withtag(root_tag):
         if canvas.type(item) == 'oval':
-            canvas.itemconfig(item, fill="blue")  # Highlight circles
+            canvas.itemconfig(item, fill="red")  # Highlight root note circle
+        elif canvas.type(item) == 'text':
+            canvas.itemconfig(item, fill="white")  # Keep the text color white
+
+    # Highlight major third (green)
+    third_tag = f"note_{major_third}"
+    for item in canvas.find_withtag(third_tag):
+        if canvas.type(item) == 'oval':
+            canvas.itemconfig(item, fill="green")  # Highlight M3 note circle
+        elif canvas.type(item) == 'text':
+            canvas.itemconfig(item, fill="white")  # Keep the text color white
+
+    # Highlight perfect fifth (blue)
+    fifth_tag = f"note_{perfect_fifth}"
+    for item in canvas.find_withtag(fifth_tag):
+        if canvas.type(item) == 'oval':
+            canvas.itemconfig(item, fill="blue")  # Highlight M5 note circle
+        elif canvas.type(item) == 'text':
+            canvas.itemconfig(item, fill="white")  # Keep the text color white
+
+    # Highlight major seventh (yellow)
+    seventh_tag = f"note_{major_seventh}"
+    for item in canvas.find_withtag(seventh_tag):
+        if canvas.type(item) == 'oval':
+            canvas.itemconfig(item, fill="orange")  # Highlight M7 note circle
         elif canvas.type(item) == 'text':
             canvas.itemconfig(item, fill="white")  # Keep the text color white
 
