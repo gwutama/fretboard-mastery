@@ -1,10 +1,13 @@
+import os
 import pygame.mixer
 import threading
 import time
 
+basedir = os.path.dirname(__file__)
+
 # Initialize pygame for sound playback
 pygame.mixer.init()
-tick_sound = pygame.mixer.Sound("sounds/drumstick.wav")
+tick_sound = pygame.mixer.Sound(os.path.join(basedir, "sounds", "drumstick.wav"))
 metronome_running = False
 
 

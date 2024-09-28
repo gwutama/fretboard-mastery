@@ -1,5 +1,8 @@
+import os
 import tkinter as tk
 import pygame.mixer
+
+basedir = os.path.dirname(__file__)
 
 # Initialize pygame mixer
 pygame.mixer.init()
@@ -11,7 +14,7 @@ notes = ['E', 'B', 'G', 'D', 'A', 'E']  # High E string is now at the top, Low E
 chromatic_scale = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
 
 # Create a dictionary to map note names to corresponding sound file paths
-note_sounds = {note: f"sounds/{note}.mp3" for note in chromatic_scale}
+note_sounds = {note: os.path.join(basedir, "sounds", f"{note}.mp3") for note in chromatic_scale}
 
 def get_note_name(string_note, fret):
     """Returns the note name for a given string and fret."""
