@@ -11,7 +11,7 @@ def create_metronome_panel(root, window_width, row, tick_event):
     bpm_label.grid(row=0, column=0, padx=5, pady=5, sticky='w')
 
     bpm_slider = tk.Scale(metronome_frame, from_=40, to=240, orient=tk.HORIZONTAL, length=300)
-    bpm_slider.set(120)
+    bpm_slider.set(60)
     bpm_slider.grid(row=0, column=1, padx=5, pady=5, sticky='w')
 
     # Reduced padx to bring buttons closer
